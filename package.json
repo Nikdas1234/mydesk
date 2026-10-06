@@ -1,0 +1,64 @@
+{
+  "name": "mydesk",
+  "productName": "MyDesk",
+  "version": "0.3.1",
+  "private": true,
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "shortcut": "node scripts/create-shortcut.js",
+    "test": "node --test \"test/*.test.js\"",
+    "icon": "electron scripts/make-icon.js",
+    "dist": "electron-builder --win nsis --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9",
+    "imapflow": "^2.2.5",
+    "mailparser": "^3.9.36",
+    "nodemailer": "^10.0.15"
+  },
+  "description": "MyDesk: Postfach und Festplatte im Blick – wichtige Mails, Newsletter abmelden, Speicher freigeben.",
+  "author": "MyDesk",
+  "build": {
+    "appId": "de.aufraeumzentrale.app",
+    "productName": "MyDesk",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "language": "1031",
+      "installerLanguages": [
+        "de_DE"
+      ],
+      "shortcutName": "MyDesk",
+      "artifactName": "MyDesk-Setup-${version}.exe"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Nikdas1234",
+        "repo": "mydesk"
+      }
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nikdas1234/mydesk.git"
+  }
+}

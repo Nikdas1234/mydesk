@@ -1,0 +1,1855 @@
+:root {
+  --bg: #ffffff;
+  --sidebar: #f5f5f7;
+  --card: #ffffff;
+  --text: #1d1d1f;
+  --text-muted: #6e6e73;
+  --line: #e5e5ea;
+  --accent: #0071e3;
+  --danger: #d70015;
+  --titlebar-height: 40px;
+  --sidebar-width: 220px;
+  --font: "Segoe UI Variable Text", "Segoe UI", sans-serif;
+  /* One curve for every movement: quick start, soft landing. */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --spring: cubic-bezier(0.34, 1.45, 0.64, 1);
+  --fast: 200ms;
+  --medium: 320ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1e;
+    --sidebar: #161617;
+    --card: #2c2c2e;
+    --text: #f5f5f7;
+    --text-muted: #98989d;
+    --line: #38383a;
+    --accent: #2997ff;
+    --danger: #ff453a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.45;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Title bar: drag area; the window buttons are drawn by Windows at the top right. */
+.titlebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--titlebar-height);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  -webkit-app-region: drag;
+}
+
+.titlebar-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Practice-mode hint: always visible, in the accent colour. Leaves room for the
+   window buttons that Windows draws at the right edge. */
+.titlebar-sandbox {
+  min-width: 0;
+  max-width: 60%;
+  margin: 0 160px 0 16px;
+  padding: 3px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Sidebar */
+.sidebar {
+  background: var(--sidebar);
+  border-right: 1px solid var(--line);
+  padding: calc(var(--titlebar-height) + 8px) 12px 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Set apart at the bottom, below the "Speicher" group */
+.sidebar-pinned {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.sidebar-heading {
+  margin: 20px 10px 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 10px;
+  margin: 1px 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar-item:hover {
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+}
+
+.sidebar-item.active {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+}
+
+.sidebar-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.sidebar-item svg {
+  flex: none;
+}
+
+/* Content area */
+.content {
+  padding: calc(var(--titlebar-height) + 16px) 40px 40px;
+  overflow-y: auto;
+}
+
+.view-title {
+  margin: 0 0 24px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.text-muted {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.stat-number {
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+/* Cards */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  padding: 24px;
+}
+
+.card:empty {
+  min-height: 120px;
+}
+
+/* Buttons: primary = filled accent, secondary = accent text only, danger = filled danger */
+.btn {
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #ffffff;
+}
+
+.sidebar-icon {
+  display: inline-flex;
+}
+
+/* View frame */
+.view {
+  max-width: 880px;
+}
+
+.view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.view-header .view-title {
+  margin: 0;
+}
+
+/* Text buttons at the right edge line up with the card below, not with their padding */
+.view-header .btn:not(.btn-primary),
+.hero .btn:not(.btn-primary) {
+  margin-right: -16px;
+}
+
+.btn {
+  transition: background-color var(--fast) var(--ease), opacity var(--fast) var(--ease);
+}
+
+.btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent);
+  opacity: 0.88;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--danger);
+  opacity: 0.88;
+}
+
+/* Feedback lines: result of a clean-up, errors */
+.feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.feedback:empty {
+  display: none;
+}
+
+.result-line,
+.error-line {
+  margin: 0;
+  font-size: 15px;
+}
+
+.result-line {
+  font-weight: 600;
+}
+
+.error-line {
+  color: var(--danger);
+}
+
+/* Progress: moving bar (the length of a scan is not known), text, "Abbrechen" */
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.progress-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.progress-text {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.progress {
+  position: relative;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+.progress-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 35%;
+  border-radius: 2px;
+  background: var(--accent);
+  animation: progress-slide 1.3s ease-in-out infinite;
+}
+
+@keyframes progress-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-bar {
+    width: 100%;
+    opacity: 0.5;
+    animation: none;
+  }
+}
+
+/* Card that only holds a hint and one button */
+.card-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 24px;
+}
+
+.card-empty p {
+  margin: 0;
+}
+
+/* Lists: one grid per list, rows share its columns (check | name | count | size) */
+.list {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  column-gap: 16px;
+}
+
+.list-row {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  align-items: center;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.list-row:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.list-row-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.list-row-note,
+.list-row-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.list-row-meta {
+  text-align: right;
+}
+
+.list-row-size {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Note instead of a size: spans the count and size columns */
+.list-row-size.is-note {
+  grid-column: span 2;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Tick box */
+.check {
+  appearance: none;
+  display: grid;
+  place-content: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 1.5px solid color-mix(in srgb, var(--text-muted) 75%, transparent);
+  border-radius: 5px;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color var(--fast) var(--ease), border-color var(--fast) var(--ease);
+}
+
+.check::after {
+  content: "";
+  width: 5px;
+  height: 9px;
+  margin-top: -2px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity var(--fast) var(--ease);
+}
+
+.check:checked {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.check:checked::after {
+  opacity: 1;
+}
+
+.check:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Card footer: sum on the left, action on the right */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+/* Overview */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.hero-text {
+  margin: 0;
+  font-size: 15px;
+}
+
+.hero-text.is-muted {
+  color: var(--text-muted);
+}
+
+.progress-card {
+  margin-top: 16px;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 20px 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+}
+
+.tile:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tile:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tile-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+
+.tile-title {
+  font-weight: 600;
+}
+
+.tile-detail {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.tile-detail.is-error {
+  color: var(--danger);
+}
+
+/* Dialog: dimmed backdrop with a centred card */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity var(--fast) var(--ease);
+  -webkit-app-region: no-drag;
+}
+
+.dialog-backdrop.visible {
+  opacity: 1;
+}
+
+.dialog {
+  width: min(420px, 100%);
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  transform: scale(0.97);
+  transition: transform var(--fast) var(--ease);
+}
+
+.dialog-backdrop.visible .dialog {
+  transform: scale(1);
+}
+
+.dialog-title {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.dialog-message {
+  margin: 0 0 24px;
+  color: var(--text-muted);
+}
+
+.dialog-details {
+  margin: -12px 0 24px;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.dialog-details li {
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+}
+
+.dialog-details li:last-child {
+  font-weight: 600;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Elements with the hidden attribute stay hidden whatever their own display says */
+[hidden] {
+  display: none !important;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Small text button inside a row */
+.btn-small {
+  padding: 4px 10px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* Lists with a trailing action column (name takes the rest, long names are cut) */
+.list.has-action {
+  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+}
+
+.list.has-files {
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+}
+
+.list-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 14px;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.list-head + .list .list-row:first-child {
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.list-row-main.is-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.list-row-icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--text-muted);
+}
+
+.list-row-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.list-row-label {
+  min-width: 0;
+}
+
+.list-row-meta {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.list-row .btn-small {
+  margin-right: -10px;
+}
+
+/* Tick box: half selected and locked */
+.check:indeterminate {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.check:indeterminate::after {
+  width: 8px;
+  height: 0;
+  margin-top: 0;
+  border-width: 0 0 2px;
+  transform: none;
+  opacity: 1;
+}
+
+.check:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Sum and action stay in view at the bottom of a long list. Sticky offsets are
+   measured inside the 40px bottom padding of .content, hence the -24px for a
+   16px gap to the window edge; the shadow hides what scrolls past below. */
+.card-footer.is-sticky {
+  position: sticky;
+  bottom: -24px;
+  margin-top: 0;
+  background: var(--card);
+  box-shadow: 0 16px 0 0 var(--card);
+}
+
+/* Duplicate groups: one card each */
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.group-card {
+  padding: 20px 24px;
+}
+
+.group-title {
+  margin: 0 0 14px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.group-card .list-row:first-child {
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.groups-more {
+  margin: 0;
+  text-align: center;
+}
+
+.card-bar {
+  position: sticky;
+  bottom: -24px; /* see .card-footer.is-sticky */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  /* The second shadow hides what scrolls past below and beside the bar. */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 0 0 16px var(--bg);
+}
+
+.notes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.notes p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.badge {
+  flex: none;
+  padding: 1px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  font-size: 13px;
+}
+
+/* Settings */
+.settings-card {
+  margin-bottom: 16px;
+}
+
+.card-title {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.number-input {
+  width: 96px;
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 45%, transparent);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  user-select: text;
+  transition: border-color var(--fast) var(--ease);
+}
+
+.number-input:hover {
+  border-color: var(--text-muted);
+}
+
+.number-input:focus-visible {
+  border-color: var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  outline-offset: 0;
+}
+
+.folder-caption {
+  margin: 24px 0 4px;
+}
+
+.folder-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+
+.folder-list > .folder-row:first-child {
+  border-top: 0;
+}
+
+.folder-row.is-default {
+  color: var(--text-muted);
+}
+
+.folder-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.folder-hint {
+  flex: none;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.folder-row .btn-small {
+  margin-right: -10px;
+}
+
+.folder-add {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.folder-add .btn {
+  margin-left: -16px;
+}
+
+/* ---- Mail ---- */
+
+/* Newsletter senders: name, numbers, actions */
+.list.is-senders {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.sender-row {
+  cursor: default;
+}
+
+.sender-row.is-done .list-row-main,
+.sender-row.is-done .list-row-meta {
+  opacity: 0.55;
+}
+
+.sender-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Important mails: list on the left, the opened mail on the right */
+.mail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.mail-list {
+  padding: 8px;
+}
+
+.mail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--fast) var(--ease);
+}
+
+.mail-row + .mail-row {
+  margin-top: 2px;
+}
+
+.mail-row:hover,
+.mail-row.is-selected {
+  background: var(--sidebar);
+}
+
+.mail-row-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mail-sender {
+  min-width: 0;
+}
+
+.mail-date,
+.mail-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.mail-date {
+  flex-shrink: 0;
+}
+
+.mail-subject {
+  font-size: 15px;
+}
+
+.mail-row.is-unread .mail-sender,
+.mail-row.is-unread .mail-subject {
+  font-weight: 600;
+}
+
+.mail-reader {
+  min-width: 0;
+}
+
+.mail-reader-subject {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.mail-reader .mail-meta {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.mail-reader-actions {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0 16px;
+}
+
+.mail-text {
+  max-height: 420px;
+  overflow: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Overview: the two mail tiles sit in their own row */
+.tiles.is-two {
+  grid-template-columns: repeat(2, 1fr);
+  margin-bottom: 16px;
+}
+
+/* Settings: text fields, the account form, word and address lists */
+.text-input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 45%, transparent);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  user-select: text;
+  transition: border-color var(--fast) var(--ease);
+}
+
+.text-input:hover {
+  border-color: var(--text-muted);
+}
+
+.text-input:focus-visible {
+  border-color: var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  outline-offset: 0;
+}
+
+.text-input::placeholder {
+  color: var(--text-muted);
+}
+
+.account-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.account-note {
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+
+.list-editor .folder-caption {
+  margin-bottom: 4px;
+}
+
+.switch-row {
+  margin-top: 14px;
+  cursor: pointer;
+}
+
+/* Important mails: the opened mail stays in sight while the list scrolls */
+.mail-reader {
+  position: sticky;
+  top: 0;
+  max-height: calc(100vh - 150px);
+  display: flex;
+  flex-direction: column;
+}
+
+.mail-reader .mail-text {
+  max-height: none;
+  flex: 1;
+  min-height: 0;
+}
+
+/* "Einordnen": subject, reason, verdict, the two decisions */
+.list.is-sort {
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+}
+
+.sort-row {
+  cursor: default;
+}
+
+.sort-row.is-unread .list-row-label {
+  font-weight: 600;
+}
+
+.sort-hint {
+  margin: 0 0 16px;
+  font-size: 13px;
+}
+
+.badge.is-quiet {
+  background: color-mix(in srgb, var(--text-muted) 14%, transparent);
+  color: var(--text-muted);
+}
+
+.btn-small.is-chosen {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* Update hint in the title bar */
+.titlebar-update {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 12px;
+  padding: 2px 4px 2px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--accent);
+  -webkit-app-region: no-drag;
+}
+
+/* Newsletter: the bar with the button for all unsubscribed senders, above the list */
+.bulk-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* ================= MyDesk 0.3: icon rail, dashboard, motion ================= */
+
+:root {
+  --sidebar-width: 64px;
+}
+
+body.nav-open {
+  --sidebar-width: 220px;
+}
+
+body {
+  transition: grid-template-columns var(--medium) var(--ease), background-color var(--medium) var(--ease), color var(--medium) var(--ease);
+}
+
+.card,
+.tile,
+.sidebar {
+  transition: background-color var(--medium) var(--ease), border-color var(--medium) var(--ease), box-shadow var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+
+/* ---- Navigation: narrow rail, names only when opened ---- */
+.sidebar {
+  padding: calc(var(--titlebar-height) + 4px) 10px 12px;
+  overflow-x: hidden;
+}
+
+.sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 36px;
+  margin-bottom: 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+.sidebar-toggle:hover {
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  color: var(--text);
+}
+
+.sidebar-item {
+  position: relative;
+  height: 36px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.sidebar-label,
+.sidebar-heading {
+  opacity: 0;
+  transition: opacity var(--fast) var(--ease);
+}
+
+.sidebar-heading {
+  height: 1px;
+  margin: 10px 8px;
+  overflow: hidden;
+  background: var(--line);
+  color: transparent;
+}
+
+body.nav-open .sidebar-label {
+  opacity: 1;
+}
+
+body.nav-open .sidebar-heading {
+  height: auto;
+  margin: 18px 12px 6px;
+  background: transparent;
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+body:not(.nav-open) .titlebar-title {
+  display: none;
+}
+
+/* Dot at the settings entry while an update waits */
+.sidebar-item.has-dot::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 28px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--sidebar);
+  border-radius: 50%;
+  background: var(--danger);
+}
+
+/* ---- Start page ---- */
+.hero-title {
+  margin: 0;
+}
+
+.hero-sub {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.dash-wide {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.dash-wide.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.tile-wide .card-title {
+  margin-bottom: 8px;
+}
+
+.dash-tiles {
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+}
+
+.progress-card {
+  margin: 0 0 16px;
+}
+
+.todo-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.todo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 8px;
+  margin: 0 -8px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--fast) var(--ease);
+}
+
+.todo-row:first-child {
+  border-top: 0;
+}
+
+.todo-row:hover {
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+}
+
+.todo-action {
+  flex: none;
+  font-size: 13px;
+  color: var(--accent);
+}
+
+.drive-label {
+  margin: 8px 0 4px;
+  font-size: 13px;
+}
+
+.drive-track,
+.update-track {
+  height: 6px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  overflow: hidden;
+}
+
+.drive-track {
+  margin-bottom: 10px;
+}
+
+.drive-bar,
+.update-bar {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--accent);
+  transition: width 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.drive-bar.is-low {
+  background: var(--danger);
+}
+
+.tile:hover {
+  transform: translateY(-2px);
+}
+
+.tile:hover .tile-icon {
+  transform: scale(1.06);
+}
+
+.tile-icon {
+  transition: transform var(--fast) var(--ease);
+}
+
+.tile.is-busy {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+/* ---- Programs list: name, last use, size, action ---- */
+.list.is-programs {
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+}
+
+.program-row {
+  cursor: default;
+}
+
+.list-row-meta.is-stale {
+  color: var(--danger);
+}
+
+/* ---- Help button and reading card ---- */
+.help-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: 8px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 55%, transparent);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  font: 600 12px/1 var(--font);
+  vertical-align: middle;
+  cursor: pointer;
+  transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease), background-color var(--fast) var(--ease);
+}
+
+.help-button:hover,
+.help-button:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  outline: none;
+}
+
+.dialog-info {
+  width: min(560px, 100%);
+  max-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-body {
+  overflow-y: auto;
+  margin: 0 -8px 16px;
+  padding: 0 8px;
+  user-select: text;
+}
+
+.dialog-body .dialog-message {
+  margin-bottom: 12px;
+}
+
+.dialog-subtitle {
+  margin: 14px 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.dialog-list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 15px;
+}
+
+.dialog-list li {
+  margin: 4px 0;
+}
+
+.dialog-update .update-track {
+  margin: -8px 0 20px;
+}
+
+/* ---- Settings: colour scheme and tile choices ---- */
+.segmented {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.segmented-item {
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.segmented-item.is-on {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.tile-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 8px 16px;
+}
+
+.tile-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+/* ---- Start animation ---- */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--bg);
+  color: var(--accent);
+  opacity: 1;
+  transition: opacity 300ms ease;
+  -webkit-app-region: drag;
+}
+
+.splash.done {
+  opacity: 0;
+}
+
+.splash-line {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+}
+
+.splash.play .splash-line {
+  animation: draw 800ms var(--ease) forwards;
+}
+
+.splash.play .splash-line:nth-child(2) {
+  animation-delay: 90ms;
+}
+
+.splash.play .splash-line:nth-child(3) {
+  animation-delay: 180ms;
+}
+
+.splash.play .splash-line:nth-child(4) {
+  animation-delay: 270ms;
+}
+
+.splash-name {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  opacity: 0;
+}
+
+.splash.play .splash-icon {
+  animation: turn 800ms cubic-bezier(0.65, 0, 0.35, 1) 750ms;
+}
+
+.splash.play .splash-name {
+  animation: pop 450ms var(--ease) 1150ms forwards;
+}
+
+.splash.done .splash-icon {
+  transform: scale(1.15);
+  transition: transform 350ms ease-in;
+}
+
+/* ---- Motion ---- */
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes turn {
+  to {
+    transform: rotate(90deg);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.rise-in {
+  animation: rise 520ms var(--ease) backwards;
+}
+
+/* Buttons, tiles and navigation entries give way a little when pressed. */
+.btn,
+.btn-small,
+.sidebar-item,
+.sidebar-toggle {
+  transition: background-color var(--fast) var(--ease), border-color var(--fast) var(--ease),
+    color var(--fast) var(--ease), opacity var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+
+.btn:active:not(:disabled),
+.btn-small:active:not(:disabled),
+.sidebar-item:active,
+.sidebar-toggle:active {
+  transform: scale(0.96);
+}
+
+.tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
+}
+
+.tile:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.list-row,
+.mail-row {
+  transition: background-color var(--fast) var(--ease), opacity var(--fast) var(--ease);
+}
+
+/* A row that is gone folds away (motion.js sets the heights). */
+.is-leaving {
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* The highlight of the navigation travels to the active entry. */
+.sidebar {
+  position: relative;
+}
+
+.sidebar-marker {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  left: 10px;
+  height: 36px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  pointer-events: none;
+  transition: transform var(--medium) var(--ease), height var(--medium) var(--ease);
+}
+
+.sidebar-marker.is-placing {
+  transition: none;
+}
+
+.sidebar-item.active,
+.sidebar-item.active:hover {
+  background: transparent;
+}
+
+/* Dialogs spring open and close quickly. */
+.dialog {
+  opacity: 0;
+  transform: translateY(12px) scale(0.94);
+  transition: transform var(--fast) ease-in, opacity var(--fast) ease-in;
+}
+
+.dialog-backdrop.visible .dialog {
+  opacity: 1;
+  transform: none;
+  transition: transform 420ms var(--spring), opacity var(--fast) var(--ease);
+}
+
+/* Placeholder rows while a scan runs */
+.skeleton {
+  margin-top: 22px;
+}
+
+.skeleton-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+.skeleton-row span {
+  width: 46%;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--text) 8%, transparent) 25%,
+    color-mix(in srgb, var(--text) 16%, transparent) 50%,
+    color-mix(in srgb, var(--text) 8%, transparent) 75%
+  );
+  background-size: 300% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+.skeleton-row span + span {
+  width: 28%;
+  height: 10px;
+}
+
+.skeleton-row:nth-child(2) span:first-child {
+  width: 58%;
+}
+
+.skeleton-row:nth-child(3) span:first-child {
+  width: 38%;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+.btn-small.is-chosen {
+  animation: pop 200ms ease-out;
+}
+
+/* Animations off: in the settings (body.no-motion) or in Windows. */
+body.no-motion *,
+body.no-motion *::before,
+body.no-motion *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+body.no-motion .splash-name,
+body.no-motion .rise-in {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Slim scroll bars that match the calm look */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--text-muted) 45%, transparent);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---- Greeting on the start page ---- */
+.hero-date {
+  margin: 0 0 2px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.tip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.tip-icon {
+  display: flex;
+  flex: none;
+  color: var(--accent);
+}
+
+.name-input {
+  flex: none;
+  width: 220px;
+}
+
+/* ---- Style "Farbig": the greeting sits on a tinted panel ---- */
+body.style-tinted .hero,
+body.style-glass .hero {
+  padding: 22px 26px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+body.style-tinted .hero {
+  border-color: color-mix(in srgb, var(--accent) 28%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--card));
+}
+
+body.style-tinted .hero-date {
+  color: var(--accent);
+}
+
+/* ---- Style "Liquid Glass": translucent surfaces over a coloured backdrop ---- */
+.backdrop {
+  display: none;
+}
+
+body.style-glass {
+  --bg: #dde7fb;
+  --card: rgba(255, 255, 255, 0.46);
+  --card-dense: rgba(255, 255, 255, 0.74);
+  --sidebar: rgba(255, 255, 255, 0.34);
+  --line: rgba(255, 255, 255, 0.8);
+  --text-muted: #4a5568;
+  --accent: #0062cc;
+  --glass-edge: rgba(255, 255, 255, 0.9);
+  --glass-shadow: rgba(40, 60, 120, 0.16);
+}
+
+@media (prefers-color-scheme: dark) {
+  body.style-glass {
+    --bg: #0b1630;
+    --card: rgba(255, 255, 255, 0.1);
+    --card-dense: rgba(16, 24, 48, 0.58);
+    --sidebar: rgba(255, 255, 255, 0.07);
+    --line: rgba(255, 255, 255, 0.2);
+    --text: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.72);
+    --accent: #4da3ff;
+    --glass-edge: rgba(255, 255, 255, 0.32);
+    --glass-shadow: rgba(0, 0, 0, 0.3);
+  }
+}
+
+body.style-glass .backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.backdrop span {
+  position: absolute;
+  width: 48vw;
+  height: 48vw;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  animation: drift 26s ease-in-out infinite alternate;
+}
+
+.backdrop span:nth-child(1) {
+  top: -16vw;
+  left: -10vw;
+  background: #2f7bff;
+}
+
+.backdrop span:nth-child(2) {
+  top: 8vh;
+  right: -12vw;
+  background: #a24bff;
+  animation-delay: -9s;
+}
+
+.backdrop span:nth-child(3) {
+  bottom: -26vw;
+  left: 28vw;
+  background: #12c2b0;
+  animation-delay: -17s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .backdrop span {
+    opacity: 0.75;
+  }
+}
+
+@keyframes drift {
+  to {
+    transform: translate(7vw, 5vh) scale(1.15);
+  }
+}
+
+body.style-glass :is(.card, .tile, .sidebar, .hero, .tip, .dialog) {
+  border: 1px solid var(--line);
+  background: var(--card);
+  box-shadow: inset 0 1px 0 var(--glass-edge), 0 10px 30px var(--glass-shadow);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  backdrop-filter: blur(24px) saturate(170%);
+}
+
+body.style-glass :is(.card, .tile, .hero, .tip) {
+  border-radius: 20px;
+}
+
+body.style-glass .sidebar {
+  border-width: 0 1px 0 0;
+  background: var(--sidebar);
+}
+
+/* Lists and dialogs stay readable: much less see-through. */
+body.style-glass :is(.card:has(.list, .mail-list, .mail-text), .dialog) {
+  background: var(--card-dense);
+}
+
+body.style-glass .tile:hover {
+  box-shadow: inset 0 1px 0 var(--glass-edge), 0 16px 36px var(--glass-shadow);
+}

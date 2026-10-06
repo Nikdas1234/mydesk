@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.log
+*.tmp.js
+.shots.tmp/
+.sandbox.tmp
+docs/*.png
+docs/superpowers/
+*.bundle

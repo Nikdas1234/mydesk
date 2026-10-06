@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MyDesk</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="backdrop" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="splash" id="splash" aria-hidden="true">
+      <svg class="splash-icon" viewBox="0 0 24 24" width="72" height="72" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <ellipse class="splash-line" cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)" />
+        <ellipse class="splash-line" cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)" />
+        <rect class="splash-line" x="9.75" y="9.75" width="4.5" height="4.5" rx="1.25" />
+      </svg>
+      <span class="splash-name">MyDesk</span>
+    </div>
+    <div class="titlebar"><span class="titlebar-title">MyDesk</span></div>
+    <nav class="sidebar" id="sidebar" aria-label="Hauptnavigation"></nav>
+    <main class="content" id="content"></main>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
